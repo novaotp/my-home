@@ -4,21 +4,19 @@ import (
 	database "api/src/database"
 	handlers "api/src/handlers"
 	"fmt"
-	"log"
-	"net/http"
 
+	"github.com/gofiber/fiber/v2"
 	_ "modernc.org/sqlite"
 )
 
 func main() {
+	app := fiber.New()
 	database.Connect()
 
-	http.HandleFunc("GET /foods", handlers.GetFoods)
-	http.HandleFunc("GET /foods/", handlers.GetFood)
-	http.HandleFunc("POST /foods", handlers.AddFood)
-	http.HandleFunc("PUT /foods/", handlers.EditFood)
-	http.HandleFunc("DELETE /foods/", handlers.DeleteFood)
+	foodsRouter := fiber.New()
+	handlers.SetupFoodRoutes(foodsRouter)
+	app.Mount("/api/v1/foods", foodsRouter)
 
 	fmt.Println("> Running on port 8080")
-	log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
+	app.Listen("127.0.0.1:8080")
 }

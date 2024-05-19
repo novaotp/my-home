@@ -1,36 +1,28 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-// Logs the error and defines a 500 failure response in the writer.
-func FailureResponse(w http.ResponseWriter, err error) {
+// Logs the error and defines a 500 failure response.
+func Failure(ctx *fiber.Ctx, err error) error {
 	fmt.Println(err)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(500)
-	json.NewEncoder(w).Encode(map[string]any{
+	return ctx.Status(500).JSON(map[string]any{
 		"success": false,
 		"message": "Internal Server Error",
 	})
 }
 
-// Defines a 200 success response in the writer with custom message and optional data.
-func SuccessResponse(w http.ResponseWriter, message string, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	if data != nil {
-		json.NewEncoder(w).Encode(map[string]any{
-			"success": true,
-			"message": message,
-			"data":    data,
-		})
-	} else {
-		json.NewEncoder(w).Encode(map[string]any{
-			"success": true,
-			"message": message,
-		})
+// Defines a 200 success response, sending a custom message and data (optional).
+func Success(ctx *fiber.Ctx, message string, data any) error {
+	var response map[string]any = map[string]any{
+		"success": true,
+		"message": message,
 	}
+	if data != nil {
+		response["data"] = data
+	}
+	return ctx.Status(200).JSON(response)
 }
