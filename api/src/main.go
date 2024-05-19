@@ -3,6 +3,7 @@ package main
 import (
 	database "api/src/database"
 	handlers "api/src/handlers"
+	"api/src/middlewares"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,6 +12,9 @@ import (
 
 func main() {
 	app := fiber.New()
+
+	middlewares.HandleCORS(app)
+
 	database.Connect()
 
 	foodsRouter := fiber.New()
