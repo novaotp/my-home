@@ -11,6 +11,7 @@ type food struct {
 	Id       int     `json:"id"`
 	Name     string  `json:"name"`
 	Quantity float32 `json:"quantity"`
+	Unit     string  `json:"unit"`
 }
 
 func SetupFoodRoutes(router *fiber.App) {
@@ -35,11 +36,12 @@ func GetFoods(ctx *fiber.Ctx) error {
 			id       int
 			name     string
 			quantity float32
+			unit     string
 		)
-		if err := rows.Scan(&id, &name, &quantity); err != nil {
+		if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
 			return responses.Failure(ctx, err)
 		}
-		foods = append(foods, food{Id: id, Name: name, Quantity: quantity})
+		foods = append(foods, food{Id: id, Name: name, Quantity: quantity, Unit: unit})
 	}
 
 	return responses.Success(ctx, "Foods retrieved successfully", foods)
@@ -59,13 +61,15 @@ func GetFood(ctx *fiber.Ctx) error {
 		id       int
 		name     string
 		quantity float32
+		unit     string
 	)
-	if err := rows.Scan(&id, &name, &quantity); err != nil {
+	if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
 		return responses.Failure(ctx, err)
 	}
 	food.Id = id
 	food.Name = name
 	food.Quantity = quantity
+	food.Unit = unit
 
 	return responses.Success(ctx, "Food retrieved successfully", food)
 }
@@ -77,7 +81,12 @@ func AddFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	rows, err := database.Connection.Query("INSERT INTO food (name, quantity) VALUES (?, ?) RETURNING *", payload["name"], payload["quantity"])
+	rows, err := database.Connection.Query(
+		"INSERT INTO food (name, quantity, unit) VALUES (?, ?, ?) RETURNING *",
+		payload["name"],
+		payload["quantity"],
+		payload["unit"],
+	)
 	if err != nil {
 		return responses.Failure(ctx, err)
 	}
@@ -89,13 +98,15 @@ func AddFood(ctx *fiber.Ctx) error {
 		id       int
 		name     string
 		quantity float32
+		unit     string
 	)
-	if err := rows.Scan(&id, &name, &quantity); err != nil {
+	if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
 		return responses.Failure(ctx, err)
 	}
 	newFood.Id = id
 	newFood.Name = name
 	newFood.Quantity = quantity
+	newFood.Unit = unit
 
 	return responses.Success(ctx, "Food added successfully", newFood)
 }
@@ -107,7 +118,13 @@ func EditFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	rows, err := database.Connection.Query("UPDATE food SET name = ?, quantity = ? WHERE id = ? RETURNING *", payload["name"], payload["quantity"], ctx.Params("id"))
+	rows, err := database.Connection.Query(
+		"UPDATE food SET name = ?, quantity = ?, unit = ? WHERE id = ? RETURNING *",
+		payload["name"],
+		payload["quantity"],
+		payload["unit"],
+		ctx.Params("id"),
+	)
 	if err != nil {
 		return responses.Failure(ctx, err)
 	}
@@ -119,23 +136,42 @@ func EditFood(ctx *fiber.Ctx) error {
 		id       int
 		name     string
 		quantity float32
+		unit     string
 	)
-	if err := rows.Scan(&id, &name, &quantity); err != nil {
+	if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
 		return responses.Failure(ctx, err)
 	}
 	editedFood.Id = id
 	editedFood.Name = name
 	editedFood.Quantity = quantity
+	editedFood.Unit = unit
 
 	return responses.Success(ctx, "Food edited successfully", editedFood)
 }
 
 // Deletes a food from the database.
 func DeleteFood(ctx *fiber.Ctx) error {
-	_, err := database.Connection.Query("DELETE FROM food WHERE id = ?;", ctx.Params("id"))
+	rows, err := database.Connection.Query("DELETE FROM food WHERE id = ? RETURNING *;", ctx.Params("id"))
 	if err != nil {
 		return responses.Failure(ctx, err)
 	}
 
-	return responses.Success(ctx, "Food deleted successfully", nil)
+	var deletedFood food = food{}
+	defer rows.Close()
+	rows.Next()
+	var (
+		id       int
+		name     string
+		quantity float32
+		unit     string
+	)
+	if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
+		return responses.Failure(ctx, err)
+	}
+	deletedFood.Id = id
+	deletedFood.Name = name
+	deletedFood.Quantity = quantity
+	deletedFood.Unit = unit
+
+	return responses.Success(ctx, "Food deleted successfully", deletedFood)
 }
