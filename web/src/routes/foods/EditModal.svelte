@@ -46,12 +46,7 @@
 			class="relative w-full mx-5 bg-white rounded-lg p-5 shadow-lg"
 			transition:fly={{ y: 50 }}
 		>
-			<form
-				method="POST"
-                action="?/edit"
-				class="relative w-full flex flex-col items-center gap-5"
-				use:enhance={editEnhance}
-			>
+			<form method="POST" action="?/edit" use:enhance={editEnhance} class="relative w-full flex flex-col items-center gap-5">
 				<h2 class="text-xl">Edit a food</h2>
 				<input type="hidden" name="id" value={food.id} />
 				<input
@@ -74,7 +69,7 @@
 					class="relative w-full h-[50px] rounded bg-slate-200 px-5"
 				/>
 				<div class="relative w-full flex gap-5">
-					<form method="POST" action="?/delete" class="relative w-full h-[50px]">
+					<form method="POST" action="?/delete" use:enhance={deleteEnhance} class="relative w-full h-[50px]">
 						<input type="hidden" name="id" value={food.id} />
 						<button type="submit" class="relative w-full h-full rounded text-slate-500 border border-slate-500">
 							Delete food
