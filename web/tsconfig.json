@@ -12,24 +12,5 @@
 		"moduleResolution": "bundler",
 		"declaration": true,
 		"experimentalDecorators": true
-	},
-	"include": [
-		"./svelte-kit/ambient.d.ts",
-		"./svelte-kit/non-ambient.d.ts",
-		"./svelte-kit/types/**/$types.d.ts",
-		"./vite.config.js",
-		"./vite.config.ts",
-		"./src/**/*.js",
-		"./src/**/*.ts",
-		"./src/**/*.svelte",
-		"./tests/**/*.js",
-		"./tests/**/*.ts",
-		"./tests/**/*.svelte"
-	],
-	"exclude": [
-		"./node_modules/**",
-		"./src/service-worker.js",
-		"./src/service-worker.ts",
-		"./src/service-worker.d.ts"
-	]
+	}
 }
