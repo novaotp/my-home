@@ -23,9 +23,13 @@
 	$: filteredFoods = $foods.filter(food => search === "" || food.name.toLowerCase().includes(search.toLowerCase()))
 </script>
 
-<main class="relative w-full h-full flex flex-col p-5 gap-5">
-	<h1>Foods here</h1>
-	<form action="/foods" class="relative w-full min-h-[50px] flex">
+<svelte:head>
+	<title>Food Inventory - My Home</title>
+</svelte:head>
+
+<main class="relative w-full h-full flex flex-col px-5 pb-5 gap-5">
+	<h1>Food Inventory</h1>
+	<form action="/food-inventory" class="relative w-full min-h-[50px] flex">
 		<input type="search" name="search" placeholder="Search food" class="relative w-full h-full px-5 rounded-l bg-slate-200" />
 		<button type="submit" class="relative h-full aspect-square rounded-r bg-slate-200 flex justify-center items-center search-icon">
 			<IconSearch class="text-slate-600" />
