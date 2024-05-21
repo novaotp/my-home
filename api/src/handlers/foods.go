@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type food struct {
+type Food struct {
 	Id       int     `json:"id"`
 	Name     string  `json:"name"`
 	Quantity float32 `json:"quantity"`
@@ -29,7 +29,7 @@ func GetFoods(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	var foods []food = []food{}
+	var foods []Food = []Food{}
 	defer rows.Close()
 	for rows.Next() {
 		var (
@@ -41,7 +41,7 @@ func GetFoods(ctx *fiber.Ctx) error {
 		if err := rows.Scan(&id, &name, &quantity, &unit); err != nil {
 			return responses.Failure(ctx, err)
 		}
-		foods = append(foods, food{Id: id, Name: name, Quantity: quantity, Unit: unit})
+		foods = append(foods, Food{Id: id, Name: name, Quantity: quantity, Unit: unit})
 	}
 
 	return responses.Success(ctx, "Foods retrieved successfully", foods)
@@ -54,7 +54,7 @@ func GetFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	var food food = food{}
+	var food Food = Food{}
 	defer rows.Close()
 	rows.Next()
 	var (
@@ -91,7 +91,7 @@ func AddFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	var newFood food = food{}
+	var newFood Food = Food{}
 	defer rows.Close()
 	rows.Next()
 	var (
@@ -129,7 +129,7 @@ func EditFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	var editedFood food = food{}
+	var editedFood Food = Food{}
 	defer rows.Close()
 	rows.Next()
 	var (
@@ -156,7 +156,7 @@ func DeleteFood(ctx *fiber.Ctx) error {
 		return responses.Failure(ctx, err)
 	}
 
-	var deletedFood food = food{}
+	var deletedFood Food = Food{}
 	defer rows.Close()
 	rows.Next()
 	var (

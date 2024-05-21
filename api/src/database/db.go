@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// The SQLite database connection.
 var Connection *sql.DB
 
 func HandleDatabaseError(err error) {
@@ -20,7 +21,8 @@ func Connect() {
 	const db_file_path string = "./src/database/data.db"
 	const db_setup_path string = "./src/database/setup.sql"
 
-	if _, err2 := os.Stat(db_file_path); err2 != nil {
+	if _, err := os.Stat(db_file_path); err != nil {
+		fmt.Println("> Setting up SQLite database")
 		os.Create(db_file_path)
 
 		b, err := os.ReadFile(db_setup_path)
@@ -42,12 +44,15 @@ func Connect() {
 			HandleDatabaseError(err)
 			return
 		}
+
+		return
 	}
 
-	db2, err := sql.Open("sqlite", db_file_path)
+	fmt.Println("> SQLite database found")
+	var err error
+	Connection, err = sql.Open("sqlite", db_file_path)
 	if err != nil {
 		HandleDatabaseError(err)
 		return
 	}
-	Connection = db2
 }
