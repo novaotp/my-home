@@ -1,6 +1,7 @@
 <script lang="ts">
 	import IconPlus from '@tabler/icons-svelte/IconPlus.svelte';
 	import IconSearch from '@tabler/icons-svelte/IconSearch.svelte';
+	import IconX from '@tabler/icons-svelte/IconX.svelte';
 	import type { PageServerData } from './$types';
 	import type { Food } from '$lib/models/Food';
 	import AddModal from './AddModal.svelte';
@@ -15,12 +16,8 @@
 	let show = false;
 	let selectedFood: Food | null = null;
 
-	$: if ($page.url.searchParams.get("search") === "") {
-		goto("/foods")
-	}
-
-	$: search = $page.url.searchParams.get("search") ?? "";
-	$: filteredFoods = $foods.filter(food => search === "" || food.name.toLowerCase().includes(search.toLowerCase()))
+	$: search = $page.url.searchParams.get('search') ?? '';
+	$: filteredFoods = $foods.filter((food) => search === '' || food.name.toLowerCase().includes(search.toLowerCase()));
 </script>
 
 <svelte:head>
@@ -29,18 +26,22 @@
 
 <main class="relative w-full h-full flex flex-col px-5 pb-5 gap-5">
 	<h1>Food Inventory</h1>
-	<form action="/food-inventory" class="relative w-full min-h-[50px] flex">
-		<input type="search" name="search" placeholder="Search food" class="relative w-full h-full px-5 rounded-l bg-slate-200" />
-		<button type="submit" class="relative h-full aspect-square rounded-r bg-slate-200 flex justify-center items-center search-icon">
+	<form action="/food-inventory" class="relative w-full min-h-[50px] flex bg-slate-200 rounded">
+		<input type="search" name="search" value={search} placeholder="Search food" class="relative w-full h-full px-5 rounded-l bg-transparent" />
+		<button
+			type="button"
+			class="relative h-full aspect-square bg-transparent flex justify-center items-center {search === '' ? 'invisible' : ''}"
+			on:click={() => goto('/food-inventory')}
+		>
+			<IconX class="text-slate-600" />
+		</button>
+		<button type="submit" class="relative h-full aspect-square rounded-r flex justify-center items-center search-icon">
 			<IconSearch class="text-slate-600" />
 		</button>
 	</form>
 	<div class="relative w-full grid grid-cols-2 gap-5 overflow-auto pb-[90px]">
 		{#each filteredFoods as food}
-			<button
-				on:click={() => (selectedFood = food)}
-				class="relative w-full aspect-square rounded border border-r-red-200 p-5"
-			>
+			<button on:click={() => (selectedFood = food)} class="relative w-full aspect-square rounded border border-r-red-200 p-5">
 				<h2>{food.name}</h2>
 				<span>{food.quantity} {food.unit} left in stock</span>
 			</button>
@@ -61,7 +62,7 @@
 
 <style lang="postcss">
 	.search-icon::before {
-		content: "";
+		content: '';
 		position: absolute;
 		top: 25%;
 		left: 0;
